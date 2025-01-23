@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read their own data
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow users to read class data if they are enrolled in the class
+    match /classes/{classId} {
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.classes.hasAny([classId]);
+    }
+  }
+}
