@@ -6,6 +6,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
+import { useRestrictCopyPaste } from "./useRestrictCopyPasre"
+
+
 interface Message {
   id: number;
   text: string;
@@ -23,7 +26,7 @@ function MessageContent({ text, sender }: { text: string; sender: 'bot' | 'user'
   if (sender === 'user') {
     return <p>{text}</p>;
   }
-
+  
   return (
     <div className="prose prose-sm max-w-none">
       <ReactMarkdown
@@ -59,6 +62,8 @@ function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isReadOnly = location.state?.readOnly || false;
   const studentId = location.state?.studentId;
+
+  useRestrictCopyPaste({ window: window, actions: ["copy", "paste"] });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
